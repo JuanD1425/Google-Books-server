@@ -1,0 +1,21 @@
+{
+    "name": "google-books",
+    "version": "1.0.0",
+    "description": "",
+    "main": "server.js",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1",
+        "start": "node server.js",
+        "client-install": "npm install --prefix client",
+        "server": "npm start --prefix server.js",
+        "client": "npm start --prefix client",
+        "dev": "concurrently \"npm run server\" \"npm run client\""
+    },
+    "author": "",
+    "license": "ISC",
+    "dependencies": {
+        "concurrently": "^5.0.0",
+        "express": "^4.17.1",
+        "mongoose": "^5.7.14"
+    }
+}
