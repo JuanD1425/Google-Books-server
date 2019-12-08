@@ -1,32 +1,41 @@
-const express = require('express');
-
 const mongoose = require('mongoose');
-const routes = require('./routes');
+const express = require('express');
+var cors = require('cors');
+const cookieParser = require('cookie-parser');
+const logger = require('morgan');
+const Data = require('./data');
+
+
+const API_PORT = 3001;
 const app = express();
-const PORT = process.env.PORT || 3001;
+app.use(cors());
+const router = express.Router();
 
-// Define middleware here
-app.use(express.urlencoded({ extended: true }));
-app.use(express.json());
-// Serve up static assets (usually on heroku)
-if (process.env.NODE_ENV === 'production') {
-    app.use(express.static('../client/build'));
-}
-// Add routes, both API and view
-app.use(routes);
+// this is our MongoDB database
+const dbRoute =
+    'mongodb://diego:hhs07029@ds253408.mlab.com:53408/heroku_cll39b6j';
 
-// Connect to the Mongo DB
-mongoose.connect(
-    process.env.MONGODB_URI || 'mongodb://localhost/admin', {
-        useUnifiedTopology: true,
-        useNewUrlParser: true
-    },
-    () => {
-        console.log('connected to DB');
-    }
-);
-
-// Start the API server
-app.listen(PORT, function() {
-    console.log(`🌎  ==> API Server now listening on PORT ${PORT}!`);
+// connects our back end code with the database
+mongoose.connect(dbRoute, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true
 });
+
+let db = mongoose.connection;
+
+db.once('open', () => console.log('connected to the database'));
+
+// checks if connection with the database is successful
+db.on('error', console.error.bind(console, 'MongoDB connection error:'));
+
+//ptional) only made for logging and
+// cookieParser, parses the request body to be a readable json format
+app.use(cookieParser());
+app.use(express.urlencoded(true));
+app.use(express.json());
+app.use(logger('dev'));
+// append /api for our http requests
+app.use('/api', router);
+
+// launch our backend into a port
+app.listen(API_PORT, () => console.log(`LISTENING ON PORT ${API_PORT}`));
